@@ -1,0 +1,152 @@
+~ Transitivity ~
+P1:	is(ADJ1:[x_pos=JJR]) 
+	& is(SUBJ1:[deprel=nsubj])
+	& is(COMP_OBJ1:[deprel=pobj])
+	---
+P2:	is(ADJ2:[x_pos=JJR])
+	& is(SUBJ2:[deprel=nsubj])
+	& is(COMP_OBJ2:[deprel=pobj])
+	---
+	lemma(ADJ1) = lemma(ADJ2)
+	& lemma(SUBJ2) = lemma(COMP_OBJ1) 	
+	--> P1: replace(COMP_OBJ1, COMP_OBJ2)     # relation = forward entailment 
+
+~ Every philosopher is mortal ~
+P1:	is(EVERY1:[deprel=det;lemma=every])
+	& is(SUBJ1:[deprel=nsubj])
+	& dependent(EVERY1, SUBJ1)
+	& is(ROOT1:[deprel=ROOT])
+	---
+P2:	is(SUBJ2:[deprel=nsubj; x_pos=NNP]) 
+	& is(ATTR2:[deprel=attr]) 
+	& is(ROOT2:[deprel=ROOT])
+	& dependent(ATTR2, ROOT2)
+	---
+	lemma(SUBJ1) = lemma(ATTR2)
+	--> P1: delete(SUBJ1,'full')
+	& insert(SUBJ2, position=0)      # relation = forward entailment   
+ 
+
+~ Every philosopher is mortal ~
+P1:	is(EVERY1:[deprel=det;lemma=every])
+	& is(SUBJ1:[deprel=nsubj])
+	& dependent(EVERY1, SUBJ1)
+	& is(ROOT1:[deprel=ROOT])
+	---
+P2:	is(SUBJ2:[deprel=nsubj; x_pos=NN]) 
+	& is(ATTR2:[deprel=attr]) 
+	& is(ROOT2:[deprel=ROOT])
+	& dependent(ATTR2, ROOT2)
+	---
+	lemma(SUBJ1) = lemma(ATTR2)
+	--> P1: delete(SUBJ1,'full')
+	& insert(A_, position=0)   
+	& insert(SUBJ2, position=1)  # relation = forward entailment 
+
+~ Hypernym replacement: forward ~
+P1:	is(SUBJ1:[deprel=nsubj; x_pos not in [NNP,NNPS]]) 
+	---
+P2:	is(ROOT:[deprel=ROOT; lemma=be])
+	& is(SUBJ2:[deprel=nsubj])
+	& is(ATTR2:[deprel=attr])
+	& has_no_dep_token(ATTR2, deprel='det')
+	---
+	lemma(SUBJ1) = lemma(SUBJ2)
+	--> P1:	insert(A_, position=0) & replace(SUBJ1, ATTR2) # relation = forward entailment 
+
+~ Hypernym replacement: forward ~
+P1:	is(SUBJ1:[deprel=nsubj; x_pos not in [NNP,NNPS]]) 
+	---
+P2:	is(ROOT:[deprel=ROOT; lemma=be])
+	& is(SUBJ2:[deprel=nsubj])
+	& is(ATTR2:[deprel=attr])
+	& has_dep_token(ATTR2, deprel='det')
+	---
+	lemma(SUBJ1) = lemma(SUBJ2)
+	--> P1:	replace(SUBJ1, ATTR2) # relation = forward entailment 
+
+
+~ Hypernym replacement: reverse ~
+P1:	is(SUBJ1:[deprel=nsubj]) 
+	---
+P2:	is(ROOT:[deprel=ROOT])
+	& is(SUBJ2:[deprel=nsubj; x_pos not in [NNP, NNPS]])
+	& is(ATTR2:[deprel=attr])
+	---
+	lemma(SUBJ1) = lemma(ATTR2)
+	--> P1:	replace(SUBJ1, SUBJ2) # relation = reverse entailment
+
+~ XOR Option 1: modus ponendo tollens ~
+P1:	is(SUBJ1:[deprel=nsubj])
+	& is(ROOT1:[deprel=ROOT])
+	& is(OPTION)
+	---
+P2:	is(EITHER:[deprel=preconj;lemma=either])
+	& is(OPTION1:[deprel=pobj])
+	& is(OPTION2:[deprel=conj])
+	& dependent(OPTION2, OPTION1)
+	& is(SUBJ2:[deprel=nsubj])
+	& is(ROOT2:[deprel=ROOT])
+	---
+	lemma(SUBJ1) = lemma(SUBJ2)
+	& lemma(ROOT1) = lemma(ROOT2)
+	& lemma(OPTION) = lemma(OPTION1) 
+	--> P1:	replace(OPTION, OPTION2)	# relation = negation
+
+~ XOR Option 2: modus ponendo tollens ~
+P1:	is(SUBJ1:[deprel=nsubj])
+	& is(ROOT1:[deprel=ROOT])
+	& is(OPTION)
+	---
+P2:	is(EITHER:[deprel=preconj;lemma=either])
+	& is(OPTION1:[deprel=pobj])
+	& is(OPTION2:[deprel=conj])
+	& dependent(OPTION2, OPTION1)
+	& is(SUBJ2:[deprel=nsubj])
+	& is(ROOT2:[deprel=ROOT])
+	---
+	lemma(SUBJ1) = lemma(SUBJ2)
+	& lemma(ROOT1) = lemma(ROOT2)
+	& lemma(OPTION) = lemma(OPTION2) 
+	--> P1:	replace(OPTION, OPTION1)	# relation = negation
+
+~ SO DID HE ~
+P1:	is(SUBJ1:[deprel=nsubj])
+	& positive_sent()
+	---
+P2:	is(SO:[deprel=advmod; lemma=so; id=0])
+	& is(ROOT:[deprel=ROOT; lemma in [do,be]])
+	& is(SUBJ2:[deprel=nsubj])
+	---
+	lemma(SO) = 'so'
+	--> P1: replace(SUBJ1, SUBJ2)	# relation = equivalence
+
+~ NEITHER DID HE ~
+P1:	is(SUBJ1:[deprel=nsubj])
+	---
+P2:	is(NEITHER:[lemma in [neither,nor]; id=0])
+	& is(ROOT:[deprel=ROOT; lemma in [do,be]])
+	& is(SUBJ2:[deprel in [nsubj,dobj]])
+	---
+	lemma(NEITHER)='neither'
+	--> P1: replace(SUBJ1, SUBJ2)	# relation = equivalence
+
+~ Modus ponens ~
+P1:	is(IF:[lemma=if])
+	& is(ADVCL1:[deprel=advcl])
+	& is(ROOT1:[deprel=ROOT])
+	---
+P2:	is(ROOT2:[deprel=ROOT])
+	---
+	same_phrase(ADVCL1, ROOT2)
+	--> P1: delete(ADVCL1,'full') # relation = equivalence
+
+~ Modus tollens ~
+P1:	is(IF:[lemma=if])
+	& is(ADVCL1:[deprel=advcl])
+	& is(ROOT1:[deprel=ROOT])
+	---
+P2:	is(ROOT2:[deprel=ROOT])
+	---
+	same_phrase(ROOT1, ROOT2,'neg')
+	--> P1: select(ADVCL1,'full') & delete(IF) # relation = negation

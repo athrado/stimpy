@@ -1,0 +1,375 @@
+# Wordnet
+~ Hypernym ~
+exists_hypernym(X) --> replace(X, hypernym(X)) # relation = forward entailment
+
+~ Hyponym ~
+exists_hyponym(X) --> replace(X, hyponym(X)) # relation =  reverse entailment
+
+~ Synonym ~
+exists_synonym(X) --> replace(X, synonym(X)) # relation = equivalence
+
+~ Sibling ~
+exists_sibling(X) --> replace(X, sibling(X)) # relation = alternation
+
+~ Antonym ~
+exists_antonym(X) --> replace(X, antonym(X)) # relation = alternation
+
+# Remove prepositional phrase
+is(PREP:[deprel = prep]) --> delete(PREP,'full') # relation = forward entailment
+
+# Remove adverb
+is(ADV:[deprel=advmod]) --> delete(ADV) # relation = forward entailment
+
+# Remove adverb
+is(GER:[deprel=amod])
+	& is(NOUN:[u_pos=NOUN])
+	& dependent(GER, NOUN)
+	--> delete(GER) # relation = forward entailment
+         
+# Remove attributive adjective
+is(ADJA:[u_pos=ADJ; deprel=amod; x_pos=JJ]) 
+	& not(in_list(lemma(ADJA), 'non_affirm_adj')) 
+	& is(NOUN:[u_pos=NOUN]) & dependent(ADJA, NOUN)
+	--> delete(ADJA) # relation = forward entailment
+	
+# Transform predicative noun phrase into predicative adjective -> John is a fast runner --> John is fast
+is(ADJA:[u_pos=ADJ; x_pos in [JJ, JJR]; deprel=amod]) 
+	& is(ROOT:[deprel=ROOT; lemma in [be, become]])
+	& not(in_list(lemma(ADJA), 'non_affirm_adj')) 
+	& is(NOUN:[u_pos=NOUN; x_pos not in [WP]; deprel=attr]) 
+	& dependent(ADJA, NOUN) 
+	& is(SUBJ:[deprel=nsubj]) & dependent(SUBJ, ROOT)
+	--> delete(NOUN,'full') 
+	& insert(ADJA, ROOT, correction=1) # relation = forward entailment
+
+# Negation of auxiliary verbs
+positive_sent() 
+	& is(ROOT:[deprel in [ROOT, auxpass]; lemma in [be, do, can, would, could, will, must, might, ought, may, should, shall]])
+	& is(!NO:[lemma=no])
+	--> insert(NOT_, ROOT) # relation = negation
+
+
+# Negation of other verbs
+positive_sent() & is(ROOT:[deprel=ROOT; lemma not in [be, do, can, would, could, will, must, might, ought, may, should, shall]]) 
+	& not_exists(lemma='no')
+	& not(is_passive())
+	--> insert(DO_, ROOT, correction=-1, pos=x_pos(ROOT)) 
+	& insert(NOT_, ROOT) 
+	& replace(ROOT, ROOT, 'VB')   # relation = negation
+
+# Remove non-defining relative clauses, seperated by comma
+is(REL_PRON:[x_pos=WP; deprel=nsubj]) 
+	& is(REL_VERB:[deprel=relcl]) 
+	& is(COMMA:[lemma=,; deprel=punct]) 
+	& id_difference(REL_PRON,COMMA,+1) 
+	& is(ROOT:[deprel=ROOT]) 
+	--> delete(REL_VERB,'full')  # relation = forward entailment	
+	
+# Remove NO before plural noun phrase
+# Optionally, singularize verb and add A or THE
+is(QUANTIFIER:[deprel=det; lemma=no]) 
+	& not(lemma(ROOT)= 'be' & context(ROOT, left='There'))
+	& is(NOUN:[x_pos=NNS]) & dependent(QUANTIFIER, NOUN) 
+	--> delete(QUANTIFIER) 
+	| replace(QUANTIFIER, [A_, THE_]) & replace(NOUN, NOUN, 'NN') 
+	& replace(ROOT:[deprel=ROOT], ROOT, x_pos=singularize(x_pos(ROOT))) # relation = negation 
+    
+# Insert "There are" before plural operators like (no, several) 
+has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& is(SUBJ:[x_pos in [NNS, NNPS]]) 
+	& is(OP:[lemma not in [all, most, the]]; deprel in [det, amod])
+	& dependent(OP, SUBJ)
+	--> insert(THERE_, position=0) 
+	& insert(BE_, position=1, pos=x_pos(ROOT))
+	& insert([WHO_, THAT_],ROOT, correction=+1) # relation = forward entailment
+	
+# or no operator at all
+has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& not_exists(x_pos='IN')
+	& is(SUBJ:[x_pos in [NNS, NNPS]]) 
+	& is(!OP:[lemma in [most, all, every, each, the]; deprel in [det, amod]; id=0])
+	--> insert(THERE_, position=0) 
+	& insert(BE_, position=1, pos=x_pos(ROOT))
+	& insert([WHO_, THAT_],ROOT, correction=+1) # relation = forward entailment
+	
+
+# "Insert "There are" before plurals and remove OP (all, most, the) 
+is(SUBJ:[x_pos in[NNS, NNPS]; deprel=nsubj]) 
+	& has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& is(OP:[lemma in [all, most]; deprel in [amod, det]])
+	& dependent(OP, SUBJ) 
+	& is(ROOT:[deprel=ROOT])
+	--> delete(OP) 
+	& insert(THERE_, position=0) 
+	& insert(BE_, position=1, pos=x_pos(ROOT)) 
+	& insert([WHO_, THAT_], ROOT, correction=0) # relation = forward entailment
+
+# Insert "There are" before singular operators like (a, every, each)
+is(OP:[lemma in [every, each, a, an]; deprel=det; id=0]) 
+	& not(lemma(ROOT)= 'be' & context(ROOT, left='There'))
+	& dependent(OP, SUBJ:[x_pos in [NN, NNP]])
+	& is(ROOT:[deprel=ROOT]) 
+	--> delete(OP) & replace(SUBJ, SUBJ, pos=pluralize(x_pos(SUBJ))) 
+	& insert(THERE_, position=0) 
+	& insert(BE_, position=1, pos=pluralize(x_pos(ROOT))) 
+	& insert([WHO_, THAT_], ROOT:[deprel=ROOT]) 
+	& replace(ROOT, ROOT, pos=pluralize(x_pos(ROOT))) # relation = forward entailment
+	
+
+# Transform "There is/are" into "There is/are no"
+#context(ROOT:[id=1; lemma = be; deprel=ROOT; form in [are,were]], left=There) 
+#	& not(lemma(NO) = 'no')
+#	--> insert(NO_, ROOT)  # relation = negation
+	
+#context(ROOT:[id=1; lemma = be; deprel=ROOT], left=There, right=no) 
+#	& is(NO:[lemma=no])
+#	--> delete(NO) # relation = negation
+
+
+# Transform "There are" into "There is"
+context(ROOT:[id=1; lemma = be; form in [are, were]; deprel=ROOT], left=There) 
+	& is(SUBJ:[x_pos=NNS; deprel=attr])
+	& dependent(SUBJ, ROOT)
+	& is(REL_CL:[deprel=relcl]) & dependent(REL_CL, SUBJ)
+	& is(REL_P:[x_pos in [WDT]; lemma in [that, who]])
+	& has_no_dep_token(SUBJ,deprel=amod) & has_no_dep_token(SUBJ, deprel=det)
+	& is(!NO:[lemma=no]) 
+	--> insert(A_, ROOT, -1)
+	& replace(SUBJ, SUBJ, x_pos=singularize(x_pos(SUBJ)))
+	& replace(ROOT, ROOT, x_pos=singularize(x_pos(ROOT)))
+	& replace(REL_CL, REL_CL, x_pos=singularize(x_pos(REL_CL))) 
+	& replace(REL_P, [WHO_, THAT_]) # relation = equivalence 
+
+# Transform "There are" into "There is"
+context(ROOT:[id=1; lemma = be; form in [are, were]; deprel=ROOT], left=There) 
+	& is(SUBJ:[x_pos=NNS; deprel=attr])
+	& dependent(SUBJ, ROOT)
+	& is(REL_CL:[deprel=relcl]) & dependent(REL_CL, SUBJ)
+	& is(REL_P:[x_pos in [WDT]; lemma in [that, who]])
+	& is(ADJ:[deprel=amod]) & dependent(ADJ, SUBJ) & has_no_dep_token(SUBJ, 'operators')
+	& is(!NO:[lemma=no]) 
+	--> insert(A_, ROOT, -1)
+	& replace(SUBJ, SUBJ, x_pos=singularize(x_pos(SUBJ)))
+	& replace(ROOT, ROOT, x_pos=singularize(x_pos(ROOT)))
+	& replace(REL_CL, REL_CL, x_pos=singularize(x_pos(REL_CL))) 
+	& replace(REL_P, [WHO_, THAT_])# relation = equivalence 
+		
+# Remove operators after 'There are'
+is(OP:[lemma in [many, several, some, few]])
+	& has_dep_token(ROOT:[deprel=ROOT; form in [were, are]], lemma='there')
+	--> delete(OP) # relation = forward entailment
+
+# Remove "no" after "There are"
+is(NO:[lemma=no])
+	& has_dep_token(ROOT:[deprel=ROOT; form in [were, are]], lemma='there')
+	--> delete(NO) # relation = negation
+
+## Replace with weaker operator
+~ Replace with weaker operator without number adaptation ~
+is(OP1:[lemma in [all,most,many,some,few,each,every,plenty, both]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'weaker' 
+	& number_adjustment(OP1,OP2) = 'none'
+	& is(SUBJ:[deprel=nsubj]) 
+	& ((has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most')
+	| has_no_dep_token(ROOT, lemma='there'))
+	--> replace(SUBJ, SUBJ, 'NNS') 
+	& replace(OP1,OP2) # relation = forward entailment
+
+## Replace with weaker operator
+~ Replace with weaker operator with pluralization ~
+is(OP1:[lemma in [each,every]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'weaker' 
+	& number_adjustment(OP1,OP2) = 'pluralize'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	& has_no_dep_token(ROOT, deprel='aux')
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NNS') 
+	& replace(ROOT, ROOT, pluralize(x_pos(ROOT))) # relation = forward entailment
+
+## Replace with weaker operator
+~ Replace with weaker operator with pluralization ~
+is(OP1:[lemma in [each,every]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'weaker' 
+	& number_adjustment(OP1,OP2) = 'pluralize'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	& is(AUX:[deprel=aux]) & dependent(AUX, ROOT)
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NNS') 
+	& replace(AUX, AUX, pluralize(x_pos(AUX))) # relation = forward entailment
+
+## Replace with weaker operator
+~ Replace with weaker operator with singularization ~
+is(OP1:[lemma in [all,most,many,some,few, plenty, both]]) 
+	& compare_operators(OP1,OP2:[EACH_, EVERY_]) = 'weaker' 
+	& number_adjustment(OP1,OP2) = 'singularize'
+	& has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& has_no_dep_token(ROOT, deprel='aux')
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NN') 
+	& replace(ROOT, ROOT, singularize(x_pos(ROOT)))  # relation = forward entailment
+
+## Replace with weaker operator
+~ Replace with weaker operator with singularization ~
+is(OP1:[lemma in [all,most,many,some,few, plenty, both]]) 
+	& compare_operators(OP1,OP2:[EACH_, EVERY_]) = 'weaker' 
+	& number_adjustment(OP1,OP2) = 'singularize'
+	& has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& is(AUX:[deprel=aux]) & dependent(AUX, ROOT)
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NN') 
+	& replace(AUX, AUX, singularize(x_pos(AUX)))  # relation = forward entailment
+	
+## Replace with weaker operator -------------------------------------
+~ Replace with stronger operator without adaptation ~
+is(OP1:[lemma in [all,most,many,some,few,each,every, plenty, both]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'stronger' 
+	& number_adjustment(OP1,OP2) = 'none'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	--> replace(OP1,OP2) # relation = reverse entailment
+
+## Replace with weaker operator
+~ Replace with stronger operator with pluralization ~
+is(OP1:[lemma in [each,every]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'stronger' 
+	& number_adjustment(OP1,OP2) = 'pluralize'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	& has_no_dep_token(ROOT, deprel='aux')
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NNS') 
+	& replace(ROOT, ROOT, pluralize(x_pos(ROOT))) # relation = reverse entailment
+
+## Replace with weaker operator
+~ Replace with stronger operator with pluralization ~
+is(OP1:[lemma in [each,every]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'stronger' 
+	& number_adjustment(OP1,OP2) = 'pluralize'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	& is(AUX:[deprel=aux]) & dependent(AUX, ROOT)
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NNS') 
+	& replace(AUX, AUX, pluralize(x_pos(AUX))) # relation = reverse entailment
+
+## Replace with stronger operator
+~ Replace with stronger operator with singularization ~
+is(OP1:[lemma in [all,most,many,some,few, plenty, both]]) 
+	& compare_operators(OP1,OP2:[EACH_, EVERY_]) = 'stronger' 
+	& number_adjustment(OP1,OP2) = 'singularize'
+	& has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& has_no_dep_token(ROOT, deprel='aux')
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NN') 
+	& replace(ROOT, ROOT, singularize(x_pos(ROOT))) # relation = reverse entailment
+
+## Replace with stronger operator
+~ Replace with stronger operator with singularization ~
+is(OP1:[lemma in [all,most,many,some,few, plenty, both]]) 
+	& compare_operators(OP1,OP2:[EACH_, EVERY_]) = 'stronger' 
+	& number_adjustment(OP1,OP2) = 'singularize'
+	& has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& is(AUX:[deprel=aux]) & dependent(AUX, ROOT)
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NN') 
+	& replace(AUX, AUX, singularize(x_pos(AUX))) # relation = reverse entailment
+	
+## Replace with weaker operator -------------------
+~ Replace with equal operator without adaptation ~
+is(OP1:[lemma in [all,most,many,some,few,each,every,plenty, both]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'equal' 
+	& number_adjustment(OP1,OP2) = 'none'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	--> replace(OP1,OP2)  # relation = equivalence
+
+## Replace with weaker operator
+~ Replace with equal operator with pluralization ~
+is(OP1:[lemma in [each,every]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'equal' 
+	& number_adjustment(OP1,OP2) = 'pluralize'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	& has_no_dep_token(ROOT, deprel='aux')
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NNS') 
+	& replace(ROOT, ROOT, pluralize(x_pos(ROOT)))  # relation = equivalence
+
+## Replace with weaker operator
+~ Replace with equal operator with pluralization ~
+is(OP1:[lemma in [each,every]]) 
+	& compare_operators(OP1,OP2:[ALL_, MOST_, MANY_, SOME_, FEW_, EACH_, EVERY_, SEVERAL_]) = 'equal' 
+	& number_adjustment(OP1,OP2) = 'pluralize'
+	& (has_dep_token(ROOT:[deprel=ROOT],lemma='there') & lemma(OP2) != 'all' & lemma(OP2) != 'most'
+	| has_no_dep_token(ROOT, lemma='there'))
+	& is(AUX:[deprel=aux]) & dependent(AUX, ROOT)
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NNS') 
+	& replace(AUX, AUX, pluralize(x_pos(AUX)))  # relation = equivalence
+
+## Replace with weaker operator
+~ Replace with equal operator with singularization ~
+is(OP1:[lemma in [all,most,many,some,few, plenty, both]]) 
+	& compare_operators(OP1,OP2:[EACH_, EVERY_]) = 'equal' 
+	& number_adjustment(OP1,OP2) = 'singularize'
+	& has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& has_no_dep_token(ROOT, deprel='aux')
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NN') 
+	& replace(ROOT, ROOT, singularize(x_pos(ROOT))) # relation = equivalence
+
+## Replace with weaker operator
+~ Replace with equal operator with singularization ~
+is(OP1:[lemma in [all,most,many,some,few, plenty, both]]) 
+	& compare_operators(OP1,OP2:[EACH_, EVERY_]) = 'equal' 
+	& number_adjustment(OP1,OP2) = 'singularize'
+	& has_no_dep_token(ROOT:[deprel=ROOT], lemma='there')
+	& is(AUX:[deprel=aux]) & dependent(AUX, ROOT)
+	--> replace(OP1,OP2)
+	& replace(SUBJ:[deprel=nsubj], SUBJ, 'NN') 
+	& replace(AUX, AUX, singularize(x_pos(AUX))) # relation = equivalence
+	
+
+#  Passive resolution
+is(BY:[lemma=by; deprel=agent]) 
+	& is(AGENT:[deprel=pobj]) 
+	& dependent(AGENT, BY)
+	& is(ACTION:[deprel=ROOT])
+	& is(SUBJ:[deprel=nsubjpass])
+	& is(AUX_VERB:[deprel=auxpass; lemma=be])
+	--> delete(ACTION)
+	& delete(BY) 
+	& replace(AUX_VERB, ACTION, pos=x_pos(AUX_VERB))
+	& replace(SUBJ, AGENT, pos=x_pos(AGENT))
+	& replace(AGENT, SUBJ, pos=x_pos(SUBJ)) # relation = equivalence
+
+# Forget to
+is(IMPLICATIVE_VERB:[lemma in [forget]; deprel=ROOT])
+	& is(TO:[lemma = to; deprel=aux])
+	& is(VERB:[deprel=xcomp])
+	-->  delete(TO) 
+	& replace(IMPLICATIVE_VERB, DO_, pos=x_pos(IMPLICATIVE_VERB))
+	& insert(NOT_, IMPLICATIVE_VERB) # relation = forward entailment
+	
+## Manage to
+is(IMPLICATIVE_VERB:[lemma in [manage, remember]; deprel=ROOT])
+	& is(TO:[lemma = to; deprel=aux])
+	& is(VERB:[deprel=xcomp])
+	& positive_sent()
+	-->  delete(TO) 
+	& delete(IMPLICATIVE_VERB)
+	& replace(IMPLICATIVE_VERB, VERB, pos=x_pos(IMPLICATIVE_VERB)) # relation = forward entailment
+
+## He "factive verb" that Y --> Y
+is(FACTIVE_VERB:[lemma in [accept, know, prove, forget];deprel=ROOT])
+	& is(THAT:[lemma = that; deprel=mark])
+	& is(VERB:[deprel=ccomp])
+	& is(SUBJ:[deprel=nsubj])
+	& dependent(SUBJ, FACTIVE_VERB)
+	--> delete(FACTIVE_VERB)
+	& delete(SUBJ)
+	& delete(THAT) # relation = forward entailment
+	
+	

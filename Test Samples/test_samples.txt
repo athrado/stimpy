@@ -1,0 +1,508 @@
+# 1
+Premises:
+- Stimpy is a cat
+Hypothesis: Stimpy is not a poodle
+Relation: forward entailment
+Inference validity: valid
+
+# 2
+Premises:
+- No woman sang loudly
+Hypothesis: No woman sang
+Relation: reverse entailment
+Inference validity: unknown
+
+# 3
+Premises:
+- Every cat eats fish
+Hypothesis: Every cat eats salmon
+Relation: reverse entailment
+Inference validity: unknown
+
+# 4
+Premises:
+- Every cat eats salmon
+Hypothesis: Every cat eats fish
+Relation: forward entailment
+Inference validity: valid
+
+# 5
+Premises:
+- Some cats eat salmon
+Hypothesis: Some cats eat fish
+Relation: forward entailment
+Inference validity: valid
+
+# 6
+Premises:
+- An Italian becomes the greatest tenor
+Hypothesis: There are Italians who become the greatest tenor
+Relation: forward entailment
+Inference validity: valid
+
+# 7
+Premises:
+- An Italian becomes the greatest tenor
+Hypothesis: There is an Italian who becomes the greatest tenor
+Relation: forward entailment
+Inference validity: valid
+
+# 8
+Premises:
+- Jack is a smarter student than Bill
+Hypothesis: Jack is smarter
+Relation: forward entailment
+Inference validity: valid
+
+# 9
+Premises:
+- John is a fast runner
+Hypothesis:  John is fast
+Relation: forward entailment
+Inference validity: valid
+
+# 10
+Premises:
+- No carnivore eats mice
+Hypothesis: There is no carnivore that eats mice
+Relation: forward entailment
+Inference validity: valid
+
+# 11
+Premises:
+- The cat caught salmon
+Hypothesis: The cat did not catch salmon
+Relation: negation
+Inference validity: invalid
+
+# 12 
+Premises:
+- The cat eats salmon
+Hypothesis: The cat does not eat salmon
+Relation: negation
+Inference validity: invalid
+
+# 13
+Premises:
+- No carnivores eat animals
+Hypothesis:  The cat eats mice
+Relation: alternation
+Inference validity: invalid
+
+# 14
+Premises:
+- No student studies hard
+Hypothesis: No student studies
+Relation: reverse entailment
+Inference validity: unknown
+
+# 15
+Premises:
+- No students study hard
+Hypothesis: No students study
+Relation: reverse entailment
+Inference validity: unknown
+
+# 16
+Premises:
+- The Japanese teacher wrote a book
+Hypothesis: The teacher wrote a book
+Relation: forward entailment
+Inference validity: valid
+
+# 17
+Premises:
+- A cat devoured fish
+Hypothesis: A cat ate fish
+Relation: equivalence
+Inference validity: valid
+
+# 18
+Premises:
+- No smart teacher won the prize
+Hypothesis: No teacher won the prize
+Relation: reverse entailment
+Inference validity: unknown
+
+# 19
+Premises:
+- The teacher wrote a book about elephants
+Hypothesis: The teacher wrote a book
+Relation: forward entailment
+Inference validity: valid
+
+# 20
+Premises:
+- Every cat eats fish
+Hypothesis: Every animal eats fish
+Relation: reverse entailment
+Inference validity: unknown
+
+# 21
+Premises:
+- My mother, who speaks Spanish, decided to move to Spain
+Hypothesis: My mother decided to move to Spain
+Relation: forward entailment
+Inference validity: valid
+
+# 22
+Premises:
+- A swede won the prize for literature
+Hypothesis: A scandinavian won the prize
+Relation: forward entailment
+Inference validity: valid
+
+# 23
+Premises:
+- The Japanese teacher wrote a book about a blue elephant tonight
+Hypothesis: The teacher did not write a book tonight
+Relation: alternation
+Inference validity: invalid
+
+# 24
+Premises:
+- The teacher wrote a book about elephants tonight
+Hypothesis: The teacher did not write a book about elephants tonight
+Relation: negation
+Inference validity: invalid
+
+# 25
+Premises:
+- The teacher wrote a book about elephants tonight
+Hypothesis: The teacher wrote a book tonight
+Relation: forward entailment
+Inference validity: valid
+
+# 26
+Premises:
+- The Japanese teacher wrote a book about a blue elephant tonight
+Hypothesis: The teacher did not write a book tonight
+Relation: alternation
+Inference validity: invalid
+
+# 27
+Premises:
+- The car was stolen by the thief
+Hypothesis: The thief stole the car
+Relation: equivalence
+Inference validity: valid
+
+# 27
+Premises:
+- The square is divided by the diagonal
+Hypothesis: The diagonal does not divide the square
+Relation: negation
+Inference validity: invalid
+
+# 28
+Premises:
+- Many great tenors are Italian
+Hypothesis: There are great tenors who are Italian
+Relation: forward entailment
+Inference validity: valid
+
+# 29
+Premises:
+- Every Italian man wants to be a great tenor
+Hypothesis: All Italian men want to be a great tenor
+Relation: equivalence
+Inference validity: valid
+
+# 30
+Premises:
+- Many great tenors are Swedish
+Hypothesis: Some great tenors are Swedish
+Relation: forward entailment
+Inference validity: valid
+
+# 31
+Premises:
+- No really great tenors are modest
+Hypothesis: There are really great tenors who are modest
+Relation: alternation
+Inference validity: invalid
+
+# 32
+Premises:
+- Every Italian man wants to be a tenor
+Hypothesis: There are Italian men who want to be a tenor
+Relation: forward entailment
+Inference validity: valid
+
+# 33
+Premises:
+- Every cat chases mice
+Hypothesis: There are cats that chase mice
+Relation: forward entailment
+Inference validity: valid
+
+# 34
+Premises:
+- No cats eat salmon
+Hypothesis: There are cats that eat salmon
+Relation: negation
+Inference validity: invalid
+
+# 35
+Premises:
+- Stimpy is a cat
+Hypothesis: Stimpy is not a poodle
+Relation: forward entailment
+Inference validity: valid
+
+# 36
+Premises:
+- No carnivores eat animals
+Hypothesis: The cat eats mice
+Relation: alternation
+Inference validity: invalid
+
+# 37
+Premises: 
+- This is a random sentence
+- Students study hard
+Hypothesis: Students study
+Relation: forward entailment
+Inference validity: valid
+
+# 38
+Premises:
+- No rabbits eat meat.
+Hypothesis: Rabbits eat meat.
+Relation: negation
+Inference validity: invalid
+
+# 39
+Premises:
+- No rabbits eat meat.
+Hypothesis: A rabbit eats meat.
+Relation: alternation
+Inference validity: invalid
+
+# 40
+Premises:
+- No rabbits eat meat.
+Hypothesis: The rabbit eats meat.
+Relation: alternation
+Inference validity: invalid
+
+# 41
+Premises:
+- No rabbits ate meat.
+Hypothesis: The rabbit ate meat.
+Relation: alternation
+Inference validity: invalid
+
+# 42
+Premises:
+- Students speak French
+Hypothesis: There are students who speak French
+Relation: forward entailment
+Inference validity: valid
+
+# 43
+Premises:
+- Many students speak French
+Hypothesis: Some students speak French
+Relation: forward entailment
+Inference validity: valid
+
+# 44
+Premises:
+- Some students speak French
+Hypothesis: Many students speak French
+Relation: reverse entailment
+Inference validity: unknown 
+
+# 45
+Premises:
+- All students speak French
+Hypothesis: Few students speak French
+Relation: forward entailment
+Inference validity: valid
+
+# 46
+Premises:
+- Few students speak French
+Hypothesis: All students speak French
+Relation: reverse entailment
+Inference validity: unknown
+
+# 47
+Premises:
+- Some students speak French
+Hypothesis: Several students speak French
+Relation: equivalence
+Inference validity: valid
+
+# 48
+Premises:
+- Jack managed to close the door
+Hypothesis: Jack closed the door
+Relation: forward entailment
+Inference validity: valid
+
+# 49
+Premises:
+- Jack forgot to close the door
+Hypothesis: Jack did not close the door
+Relation: forward entailment
+Inference validity: valid
+
+# 50
+Premises:
+- Jack managed to close the door
+Hypothesis: Jack closed the door
+Relation: forward entailment
+Inference validity: valid
+
+# 51
+Premises:
+- Jack forgot that the restaurant was closed
+Hypothesis: The restaurant was closed
+Relation: forward entailment
+Inference validity: valid
+
+# 52
+Premises:
+- A is bigger than B
+- B is bigger than C
+Hypothesis: A is not greater than C
+Relation: alternation
+Inference validity: invalid
+
+# 53
+Premises:
+- A is bigger than B
+- B is bigger than C
+Hypothesis: A is bigger than C
+Relation: forward entailment
+Inference validity: valid
+
+# 54
+Premises:
+- Socrates is a philosopher
+- Every philosopher is mortal
+Hypothesis: Socrates is mortal
+Relation: forward entailment
+Inference validity: valid
+
+# 55
+Premises:
+- A tiger is a feline
+- Every feline eats fish
+Hypothesis: A tiger eats fish
+Relation: forward entailment
+Inference validity: valid
+
+# 56
+Premises:
+- A Swede won a Nobel prize
+- Every Swede is a Scandinavian
+Hypothesis: A scandinavian won a Nobel prize
+Relation: forward entailment
+Inference validity: valid
+
+# 57
+Premises:
+- A Scandinavian won a Nobel prize
+- Every Swede is a Scandinavian
+Hypothesis: A Swede won a Nobel prize
+Relation: reverse entailment
+Inference validity: unknown
+
+# 58
+Premises:
+- Every manager has a company car
+- Jones is a manager
+Hypothesis: Jones has a company car
+Relation: forward entailment
+Inference validity: valid
+
+# 59
+Premises:
+- Every student used her workstation
+- Mary is a student
+Hypothesis: Mary used her workstation
+Relation: forward entailment
+Inference validity: valid
+
+# 60
+Premises:
+- Theo goes either to Japan or China
+- Theo goes to Japan
+Hypothesis: Theo goes to China
+Relation: negation
+Inference validity: invalid
+
+# 61
+Premises:
+- Theo goes either to Japan or China
+- Theo goes to Japan
+Hypothesis: Theo does not go to China
+Relation: equivalence
+Inference validity: valid
+
+# 62
+Premises:
+- Tommy loves pizza
+- So does Rick
+Hypothesis: Rick loves pizza
+Relation: equivalence
+Inference validity: valid
+
+# 63
+Premises:
+- Cats do not eat chocolate
+- Neither do dogs
+Hypothesis: Dogs do not eat chocolate
+Relation: equivalence
+Inference validity: valid
+
+# 64
+Premises:
+- If you eat vegetables, you stay healthy
+- You eat vegetables
+Hypothesis: You stay healthy
+Relation: equivalence
+Inference validity: valid
+
+# 65
+Premises:
+- The window is open if it is not shut
+- It is not shut
+Hypothesis: The window is open
+Relation: equivalence
+Inference validity: valid
+
+# 66
+Premises:
+- If he is sick, he stays at home
+- He does not stay at home
+Hypothesis: He is not sick
+Relation: equivalence
+Inference validity: valid
+
+# 67
+Premises:
+- You pass the exam if you work hard
+- You do not pass the exam
+Hypothesis: You do not work hard
+Relation: equivalence
+Inference validity: valid
+
+# 68
+Premises:
+- You do not pass the exam if you are lazy
+- You pass the exam
+Hypothesis: You are not lazy
+Relation: equivalence
+Inference validity: valid
+
+# 70
+Premises:
+- If a puppy is a cat, a puppy is not a poodle
+- A puppy is not a cat
+Hypothesis: A puppy is a poodle
+Relation: unknown
+Inference validity: unknown
