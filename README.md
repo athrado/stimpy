@@ -1,9 +1,8 @@
 # Sentence Transformative Inference Mapping for Python
 
 
-![](https://raw.githubusercontent.com/athrado/stimpy/master/Report/tree.png)
 
-_STIMPY_ is an Natural Language Inference engine for inferring whether a hypothesis _h_ follows from a given premise _p_ - or a set of premises.
+_STIMPY_ is an Natural Language Inference engine for inferring whether a hypothesis _h_ follows from a given premise _p_, or a set of premises.
 
 ```
 Premise:      Mrs. Norris is a cat.
@@ -14,8 +13,8 @@ Valid inference
 ```
 
 ```
-Premise 1:   If it is raining, you can't go by bicycle.
-Premise 2:   You can go by bicycle.
+Premise 1:   If it is raining, you should not go by bicycle.
+Premise 2:   You should go by bicycle.
 Hypothesis:  It is raining.
 --- 
 Relation: negation
@@ -40,13 +39,15 @@ exists_hypernym(X) --> replace(X, hypernym(X))
 For more details about the engine, the rule syntax and system performance, please consult the [report](https://github.com/athrado/stimpy/blob/master/Report/FM_JuliaSuter2019.pdf). 
 
 
+![](https://raw.githubusercontent.com/athrado/stimpy/master/Report/tree.png)
+
 ## How to Run
 
 For processing a single NLI problem, specify hypothesis/query and premise set in the main function of `RUN_stimpy.py.` and run with Python.
 
 For evaluating the system on the FraCaS test suite, run `EVALUATE_Fracas.py.` At the beginning of the script, you can select specific sets of FraCaS problems and adjust the timeout. 
 
-For evaluating the development samples, run `EVALUATE_dev_samples.py.`  This script allows you to test test any other set of NLI problems, as long as they are saved in the following format:
+For evaluating the development samples, run `EVALUATE_dev_samples.py.`  This script allows you to test any other set of NLI problems, as long as they are saved in the following format:
 
 ```
 # Comment line
