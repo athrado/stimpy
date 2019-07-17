@@ -1,7 +1,7 @@
 # _STIMPY_
 # Sentence Transformative Inference Mapping for Python
 
-![](https://github.com/athrado/stimpy/tree/master/Report/tree)
+![](https://github.com/athrado/stimpy/tree/master/Report/tree.png)
 
 _STIMPY_ is an Natural Language Inference engine for inferring whether a hypothesis _h_ follows from a given premise _p_ - or a set of premises.
 
