@@ -250,16 +250,16 @@ def get_all_wordnet_connections(word_pos_list_premise, word_pos_list_query=None,
             
     # Save dicts
     if save_dicts:
-        with open('../src/wordnet_dicts/synonyms_dict.pkl','wb') as fp:
+        with open('../Scripts/wordnet_dicts/synonyms_dict.pkl','wb') as fp:
             pickle.dump(synonyms_dict, fp)
             
-        with open('../src/wordnet_dicts/hypernyms_dict.pkl','wb') as fp:
+        with open('../Scripts/wordnet_dicts/hypernyms_dict.pkl','wb') as fp:
             pickle.dump(hypernyms_dict, fp)
             
-        with open('../src//wordnet_dicts/hyponyms_dict.pkl','wb') as fp:
+        with open('../Scripts//wordnet_dicts/hyponyms_dict.pkl','wb') as fp:
             pickle.dump(hyponyms_dict, fp)
             
-        with open('../src//wordnet_dicts/antonyms_dict.pkl','wb') as fp:
+        with open('../Scripts//wordnet_dicts/antonyms_dict.pkl','wb') as fp:
             pickle.dump(antonyms_dict, fp)
             
             

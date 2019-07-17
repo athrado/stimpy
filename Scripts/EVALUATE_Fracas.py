@@ -124,7 +124,7 @@ for rule in rules:
     rule.load_rule(verbose=False)
 
 # Load Fracas samples/problems
-tree = ET.parse('../FraCas/fracas.xml')
+tree = ET.parse('../Evaluation/FraCas/fracas.xml')
 root = tree.getroot()
 fracas_samples = root.findall('problem')
 
@@ -683,11 +683,10 @@ def evaluation_pipeline(fracas_samples, full_tree=False):
             
     # Logging
     logging.info('\n**************************')
-    logging.info('  PERFORMANCE OVERVIEW   ')
-    logging.info('**************************')
+    logging.info('PERFORMANCE OVERVIEW   \n**************************')
     logging.info('Validity Accuracy:')
     logging.info(str(v_correct)+'/'+str(n_samples))
-    logging.info(round(v_correct/n_samples*100.00,2))
+    logging.info(round(v_correct/n_samples*100.00,2)+'%')
     logging.info('*********************')
 
     logging.info('Time outs: %d' % time_outs)
@@ -709,24 +708,26 @@ def evaluation_pipeline(fracas_samples, full_tree=False):
     logging.info('FP unknown: {}'.format(fp_unknown)+'\n')
 
     logging.info('Correct by match: {}'.format(correct_by_match))
-    logging.info('InCorrect by match: {}'.format(incorrect_by_match) )
+    logging.info('Incorrect by match: {}'.format(incorrect_by_match) )
+    
+    # Correct vs. incorrect
+    correct_validities = collections.Counter(correct_validities)
+    logging.info('\nCorrect: {}'.format(correct_validities.most_common(3)))
+        
+    wrong_validities = collections.Counter(wrong_validities)
+    logging.info('Wrong: {}'.format(wrong_validities.most_common(3)))
     
     logging.info('*********************')
-    logging.info('Transitions')
+    logging.info('\nTransitions')
     logging.info('Total: {}'.format(sum(n_transitions)))
-    logging.info('Avg  : {}'.format(sum(n_transitions)/len(n_transitions))) 
-    logging.info('Min  : {}'.format(min(n_transitions)))
-    logging.info('Max  : {}'.format(max(n_transitions)))
+    logging.info('Avg:   {}'.format(sum(n_transitions)/len(n_transitions))) 
+    logging.info('Min:   {}'.format(min(n_transitions)))
+    logging.info('Max:   {}'.format(max(n_transitions)))
     
     # Rule frequencies
 #    rule_frequencies(all_applied_rules, 5)
 
-    # Correct vs. incorrect
-    correct_validities = collections.Counter(correct_validities)
-    logging.info('Correct: {}'.format(correct_validities.most_common(3)))
-        
-    wrong_validities =collections.Counter(wrong_validities)
-    logging.info('Wrong: {}'.format(wrong_validities.most_common(3)))
+
     
     
 # ----------------------------------------
@@ -738,5 +739,4 @@ evaluation_pipeline(fracas_samples)
 end = time.time()
 
 # Proessing time
-logging.info('Processing time:')
-logging.info('{} minutes'.format(round((end - start)/60,2)))
+logging.info('Processing time: {} minutes'.format(round((end - start)/60,2)))

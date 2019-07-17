@@ -50,7 +50,7 @@ for rule in rules:
     rule.load_rule(verbose=False)
 
 # Load samples
-with open("../Test Samples/test_samples.txt") as infile:
+with open("../Evaluation/Test Samples/test_samples.txt") as infile:
     samples_raw = infile.read()
     samples = samples_raw.split('\n\n')
     

@@ -1,9 +1,0 @@
-{
-  "children": [
-    {
-      "name": "some cats devour salmon"
-    }
-  ],
-  "edge": "exists_synonym(X)",
-  "name": "some cats devour fish"
-}
